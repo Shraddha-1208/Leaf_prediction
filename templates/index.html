@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruit Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+<body>
+<div>
+
+
+    <h1>Upload an Image to Predict the Fruit Type</h1>
+
+    <!-- Form for uploading an image -->
+    <form action="/predict" method="POST" enctype="multipart/form-data">
+        <label for="image">Choose an image:</label>
+        <input type="file" id="image" name="image" accept="image/*" required>
+        <br><br>
+        <button type="submit">Upload and Predict</button>
+    </form>
+
+    <h3>Prediction Result:</h3>
+    <p id="prediction-result"></p>
+    </div>
+
+    <script>
+        // JavaScript to handle the form submission
+        document.querySelector('form').onsubmit = async function(event) {
+            event.preventDefault();  // Prevent default form submission
+
+            const formData = new FormData(event.target);
+
+            // Send a POST request to Flask server with the uploaded image
+            const response = await fetch('/predict', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            // Display the prediction result
+            const predictionElement = document.getElementById('prediction-result');
+            if (result.prediction) {
+                predictionElement.innerText = `Predicted Class: ${result.prediction}`;
+            } else if (result.error) {
+                predictionElement.innerText = `Error: ${result.error}`;
+            }
+        };
+    </script>
+</body>
+</html>
